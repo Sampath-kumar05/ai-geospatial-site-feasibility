@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Site Feasibility</title>
+
+  <style>  
+@media print {
+    body {
+        background: white !important;
+        color: black !important;
+    }
+
+    header {
+        background: white !important;
+        color: black !important;
+        border-bottom: 2px solid #1f4e79;
+    }
+
+    .container {
+        width: 95% !important;
+        margin: 10px auto !important;
+        padding: 15px !important;
+        box-shadow: none !important;
+        break-inside: auto;
+    }
+
+    button {
+        display: none !important;
+    }
+
+    img, svg {
+        max-width: 100%;
+        break-inside: avoid;
+    }
+
+    h1, h2, h3 {
+        color: black !important;
+        break-after: avoid;
+       }
+          @page {
+    margin: 12mm;
+          }
+}
+
+
+       
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #1f4e79;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+
+        .container {
+            width: 80%;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ccc;
+        }
+
+        h2 {
+            color: #1f4e79;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            margin-top: 25px;
+            padding: 12px 25px;
+            background: #1f4e79;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #163a5c;
+        }
+
+        #result {
+            margin-top: 25px;
+            padding: 20px;
+            background: #eef5fb;
+            display: none;
+        }
+    </style>
+    
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+
+</head>
+
+<body>
+
+<header>
+    <h1>AI-Powered Geospatial Web Platform</h1>
+    <p>Pre-Construction Site Feasibility and Client Advisory</p>
+</header>
+
+<div class="container">
+
+    <h2>Site Information</h2>
+
+    <label>Site Area (sq.ft)</label>
+    <input type="number" id="area" placeholder="Example: 2000">
+
+    <label>Site Length (ft)</label>
+    <input type="number" id="length" placeholder="Example: 40">
+
+    <label>Site Width (ft)</label>
+    <input type="number" id="width" placeholder="Example: 50">
+
+    
+<br><br>
+
+
+<label for="siteLocation">Site Location</label>
+<input
+    type="text"
+    id="siteLocation"
+    placeholder="Example: Hyderabad, Telangana"
+>
+<br><br>
+
+<h3>Site Location Map</h3>
+<div id="map" style="height: 350px; width: 100%; border-radius: 10px;"></div>
+<br>
+<button type="button" onclick="showSiteOnMap()">Show Location on Map</button>
+<br><br>
+
+    <label>Soil Type</label>
+    <select id="soil">
+        <option value="">Select Soil Type</option>
+        <option>Black Cotton Soil</option>
+        <option>Red Soil</option>
+        <option>Sandy Soil</option>
+        <option>Clay Soil</option>
+        <option>Gravel Soil</option>
+    </select>
+
+    <label>Upload Site Image</label>
+    <input type="file" id="siteImage" accept="image/*">
+    <br><br>
+
+<img id="sitePreview"
+     style="max-width:500px; display:none; margin-top:15px; border-radius:10px;"
+     alt="Site Preview">
+
+    <button onclick="analyzeSite(); updateSitePlan()">Analyze Site</button>
+    <button onclick="analyzeUploadedImage()">
+    Analyze Uploaded Image
+</button>
+
+<div id="imageAnalysisResult"></div>
+
+
+<div id="sitePlanSection" style="margin: 24px 0; padding: 16px; border: 1px solid #ddd; border-radius: 10px;">
+    <h2>Basic 2D Site Plan</h2>
+    <p>Illustrative rectangular plot based on the entered dimensions.</p>
+
+    <svg id="sitePlanSvg"
+         viewBox="0 0 400 300"
+         width="100%"
+         style="max-width: 500px; display: block; margin: auto;"
+         role="img"
+         aria-label="Illustrative rectangular site plan">
+
+        <rect x="70" y="45" width="260" height="190"
+              fill="#e8f5e9"
+              stroke="#2563eb"
+              stroke-width="3"/>
+
+              <!-- Proposed building footprint -->
+<rect x="115" y="80" width="150" height="105"
+    fill="#d6dbe1"
+    stroke="#374151"
+    stroke-width="2"/>
+
+    <!-- Conceptual building entrance -->
+<rect x="178" y="173" width="24" height="12"
+    fill="#8b5e3c"
+    stroke="#374151"
+    stroke-width="1.5"/>
+
+<text x="190" y="168"
+    text-anchor="middle"
+    font-size="10"
+    fill="#111827">Entrance</text>
+
+<!-- Building label -->
+<text x="190" y="118"
+    text-anchor="middle"
+    font-size="14"
+    fill="#111827">Proposed</text>
+
+<text x="190" y="143"
+    text-anchor="middle"
+    font-size="14"
+    fill="#111827">Building</text>
+
+<!-- Open space label -->
+<text x="190" y="215"
+    text-anchor="middle"
+    font-size="12"
+    fill="#166534">Open Space</text>
+
+        <text id="planLengthLabel"
+              x="200" y="30"
+              text-anchor="middle"
+              font-size="14">Length</text>
+
+        <text id="planWidthLabel"
+              x="25" y="145"
+              text-anchor="middle"
+              font-size="14"
+              transform="rotate(-90 25 145)">width</text>
+
+        <text id="planAreaLabel"
+              x="200" y="265"
+              text-anchor="middle"
+              font-size="14">Area</text>
+    </svg>
+
+    <p style="font-size: 13px; color: #8a4b08;">
+        Conceptual illustration only—not a surveyed drawing or construction-ready site plan.
+    </p>
+</div>
+
+<div id="reportHeader" style="display: none;">
+    <h1>AI-Powered Geospatial Web Platform</h1>
+    <h2>Pre-Construction Site Feasibility and Client Advisory</h2>
+    <p>Preliminary Site Analysis Report</p>
+    <hr>
+</div>
+
+    <div id="result">
+    <h2>Preliminary Site Recommendation</h2>
+
+    <p id="recommendation"></p>
+
+    <hr>
+
+    <h2>Overall Site Feasibility Score</h2>
+
+    <p id="score"></p>
+    <p id="scoreMessage"></p>
+</div>
+<div id="feasibilityDetails">
+    <h2>Detailed Feasibility Analysis</h2>
+
+    <p id="soilAnalysis"></p>
+    <p id="dimensionAnalysis"></p>
+    <p id="foundationAnalysis"></p>
+    <p id="drainageAnalysis"></p>
+    <p id="developmentAnalysis"></p>
+</div>
+
+<hr>
+
+<p style="font-size: 13px; color: #8a4b08; background: #fff4df; padding: 10px; border-radius: 6px;">
+<strong>Important Disclaimer:</strong> This platform provides preliminary site feasibility suggestions for educational and planning purposes only. The feasibility score and AI image predictions are not engineering safety assessments. Soil testing, geotechnical investigation, structural design, and verification by qualified professionals are required before construction.
+</p>
+
+<button onclick="window.print()">Generate / Save Report as PDF</button>
+
+</div>
+
+<script>
+
+function analyzeSite() {
+
+    let area = document.getElementById("area").value;
+    let length = document.getElementById("length").value;
+    let width = document.getElementById("width").value;
+    let soil = document.getElementById("soil").value;
+    let location = document.getElementById("siteLocation").value;
+
+    if (area === "" || length === "" || width === "" || soil === "") {
+        alert("Please enter all site details.");
+        return;
+    }
+
+    let foundation;
+
+    if (soil === "Black Cotton Soil" || soil === "Clay Soil") {
+        foundation = "A suitable foundation may require special consideration such as a deeper foundation or soil improvement.";
+    } 
+    else if (soil === "Sandy Soil") {
+        foundation = "A suitable foundation may be isolated footing or another system depending on bearing capacity and site investigation.";
+    } 
+    else {
+        foundation = "A preliminary shallow foundation such as isolated footing may be considered, subject to soil investigation.";
+    }
+
+    document.getElementById("result").style.display = "block";
+
+    document.getElementById("recommendation").innerHTML =
+        "Site Area: " + area + " sq.ft<br>" +
+        "Dimensions: " + length + " ft × " + width + " ft<br>" +
+        "Soil Type: " + soil + "<br><br>" +
+        "Site Location: " + location + "<br><br>" +
+        "<strong>Preliminary Foundation Recommendation:</strong><br>" +
+        foundation;
+     
+
+  // Site Feasibility Score
+  let score = 60;
+
+  // Site area
+  if (area >= 1500) {
+      score += 10;
+  } else if (area > 0) {
+      score += 5;
+  }
+
+  // Soil type
+  if (soil === "Red Soil") {
+      score += 10;
+  } else if (soil === "Sandy Soil") {
+      score += 5;
+  } else if (
+      soil === "Clay Soil" ||
+      soil === "Black Cotton Soil"
+  ) {
+      score -= 10;
+  }
+
+  // Keep score within 0–100
+  score = Math.max(0, Math.min(100, score));
+
+
+
+let scoreMessage = "";
+
+if (score >= 80) {
+    scoreMessage = "Good site suitability for preliminary development.";
+}
+else if (score >= 60) {
+    scoreMessage = "Moderate site suitability. Further investigation is recommended.";
+}
+else {
+    scoreMessage = "Low site suitability. Detailed engineering investigation is required.";
+}
+
+document.getElementById("score").innerHTML =
+    "<strong>" + score + "/100</strong>";
+
+document.getElementById("scoreMessage").innerHTML =
+    scoreMessage;
+
+
+document.getElementById("soilAnalysis").innerHTML =
+    "<strong>Soil Suitability:</strong> Selected soil is " + soil +
+    ". A soil investigation is required to confirm its suitability.";
+
+document.getElementById("dimensionAnalysis").innerHTML =
+    "<strong>Site Dimensions:</strong> " + length + " ft × " +
+    width + " ft. Verify setbacks and local building regulations.";
+
+document.getElementById("foundationAnalysis").innerHTML =
+    "<strong>Foundation:</strong> " + foundation;
+
+document.getElementById("drainageAnalysis").innerHTML =
+    "<strong>Drainage:</strong> Check site slope, surface runoff, and waterlogging risk.";
+
+document.getElementById("developmentAnalysis").innerHTML =
+    "<strong>Development Suitability:</strong> Verify road access, setbacks, soil conditions, and local approvals.";
+}
+document.getElementById("siteImage").addEventListener("change", function() {
+    const file = this.files[0];
+    const preview = document.getElementById("sitePreview");
+
+    if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+    }
+});
+
+
+let siteMap;
+let siteMarker;
+
+ function showSiteOnMap() {
+    const locationText = document.getElementById("siteLocation").value.trim();
+    if (!locationText) {
+        alert("Please enter the site location first.");
+        return;
+    }
+
+    const mapElement = document.getElementById("map");
+
+    if (!siteMap) {
+        siteMap = L.map("map").setView([17.385, 78.487], 11);
+        L.tileLayer("https://tile.openstreetmap.de/{z}/{x}/{y}.png", {
+            attribution: "&copy; OpenStreetMap contributors"
+        }).addTo(siteMap);
+    }
+
+    // Restricting search to India using countrycodes=in fixes local mapping errors
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationText)}&countrycodes=in`;
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.length > 0) {
+                const lat = data[0].lat;
+                const lon = data[0].lon;
+
+                siteMap.setView([lat, lon], 16);
+
+                if (siteMarker) {
+                    siteMap.removeLayer(siteMarker);
+                }
+
+                siteMarker = L.marker([lat, lon]).addTo(siteMap)
+                    .bindPopup(`<b>Site Location:</b> ${locationText}<br>Lat: ${lat}, Lon: ${lon}`)
+                    .openPopup();
+            } else {
+                alert("Location not found. Try adding 'Hyderabad' to your search string.");
+            }
+        })
+        .catch(err => console.error("Geocoding error:", err));
+}
+
+
+
+async function analyzeUploadedImage() {
+    const image = document.getElementById("sitePreview");
+    const result = document.getElementById("imageAnalysisResult");
+
+    if (!image || !image.src ||
+        image.style.display === "none") {
+        result.innerText = "Please upload a site image first.";
+        return;
+    }
+
+    result.innerText = "Loading image model. Please wait...";
+
+    try {
+        const model = await mobilenet.load();
+        const predictions = await model.classify(image);
+
+        result.innerHTML = "<h3>Image Analysis Results</h3>";
+
+        const note = document.createElement("p");
+note.textContent =
+    "Note: These are general image-classification predictions only. " +
+    "They do not measure soil strength, bearing capacity, or foundation safety.";
+note.style.color = "#8a4b08";
+note.style.backgroundColor = "#fff3cd";
+note.style.padding = "10px";
+note.style.borderRadius = "6px";
+
+result.appendChild(note);
+
+        
+predictions.forEach(function (item) {
+    const percentage = (item.probability * 100).toFixed(1);
+
+    const card = document.createElement("div");
+    card.style.margin = "12px 0";
+    card.style.padding = "12px";
+    card.style.border = "1px solid #ddd";
+    card.style.borderRadius = "8px";
+
+    const label = document.createElement("p");
+    label.textContent = item.className;
+    label.style.fontWeight = "bold";
+    label.style.margin = "0 0 8px 0";
+
+    const track = document.createElement("div");
+    track.style.backgroundColor = "#e5e7eb";
+    track.style.height = "12px";
+    track.style.borderRadius = "6px";
+    track.style.overflow = "hidden";
+
+    const bar = document.createElement("div");
+    bar.style.width = percentage + "%";
+    bar.style.height = "100%";
+    bar.style.backgroundColor = "#2563eb";
+    bar.style.borderRadius = "6px";
+
+    const confidence = document.createElement("p");
+    confidence.textContent = "Model confidence: " + percentage + "%";
+    confidence.style.margin = "8px 0 0 0";
+
+    track.appendChild(bar);
+    card.appendChild(label);
+    card.appendChild(track);
+    card.appendChild(confidence);
+    result.appendChild(card);
+});
+
+
+    } catch (error) {
+        console.error(error);
+        result.innerText =
+            "Image analysis failed. Check your internet connection and try again.";
+    }
+}function updateSitePlan() {
+    const length = Number(document.getElementById("length").value);
+    const width = Number(document.getElementById("width").value);
+    const area = Number(document.getElementById("area").value);
+
+    if (length <= 0 || width <= 0) {
+        alert("Please enter a valid site length and width first.");
+        return;
+    }
+
+    document.getElementById("planLengthLabel").textContent =
+        "Length: " + length + " ft";
+
+    document.getElementById("planWidthLabel").textContent =
+        "Width: " + width + " ft";
+
+    document.getElementById("planAreaLabel").textContent =
+        "Area: " + (area > 0 ? area : length * width) + " sq ft";
+}
+
+
+</script>
+
+</body>
+</html>
