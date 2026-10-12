@@ -128,14 +128,49 @@
 
     <h2>Site Information</h2>
 
-    <label>Site Area (sq.ft)</label>
-    <input type="number" id="area" placeholder="Example: 2000">
+    
+<label for="plotShape">Plot Shape</label>
+<select id="plotShape" onchange="updatePlotFields(); update2DSitePlan();">
+    <option value="rectangle">Rectangle</option>
+    <option value="triangle">Triangle</option>
+    <option value="trapezoid">Trapezoid</option>
+    <option value="irregular">Irregular Plot</option>
+</select>
 
-    <label>Site Length (ft)</label>
-    <input type="number" id="length" placeholder="Example: 40">
+<div id="plotMeasurements">
+    <label for="length">Length / Base (ft)</label>
+    <input type="number" id="length" min="0" step="any"
+           placeholder="Enter length or base"
+           oninput="calculatePlotArea()">
 
-    <label>Site Width (ft)</label>
-    <input type="number" id="width" placeholder="Example: 50">
+    <label for="width">Width / Height (ft)</label>
+    <input type="number" id="width" min="0" step="any"
+           placeholder="Enter width or height"
+           oninput="calculatePlotArea()">
+
+    <div id="extraMeasurements" style="display:none;">
+        <label for="sideC">Second parallel side (ft)</label>
+        <input type="number" id="sideC" min="0" step="any"
+               placeholder="Enter second side"
+               oninput="calculatePlotArea()">
+
+        <label for="sideD">Third side (ft)</label>
+        <input type="number" id="sideD" min="0" step="any"
+               placeholder="Enter third side"
+               oninput="calculatePlotArea()">
+
+        <label for="sideE">Fourth side (ft)</label>
+        <input type="number" id="sideE" min="0" step="any"
+               placeholder="Enter fourth side"
+               oninput="calculatePlotArea()">
+    </div>
+</div>
+
+<label for="area">Calculated Site Area (sq. ft.)</label>
+<input type="number" id="area" readonly
+       placeholder="Area will be calculated automatically">
+
+
 
     
 <br><br>
@@ -192,13 +227,14 @@
          role="img"
          aria-label="Illustrative rectangular site plan">
 
-        <rect x="70" y="45" width="260" height="190"
-              fill="#e8f5e9"
-              stroke="#2563eb"
-              stroke-width="3"/>
+       <polygon id="plotOutline"
+         points="70,45 330,45 330,235 70,235"
+         fill="#e8f5e9"
+         stroke="#2563eb"
+         stroke-width="3"/>
 
-              <!-- Proposed building footprint -->
-<rect x="115" y="80" width="150" height="105"
+             <rect id="buildingFootprint"
+    x="125" y="100" width="150" height="90"
     fill="#d6dbe1"
     stroke="#374151"
     stroke-width="2"/>
@@ -524,27 +560,212 @@ predictions.forEach(function (item) {
         result.innerText =
             "Image analysis failed. Check your internet connection and try again.";
     }
-}function updateSitePlan() {
+}
+
+
+function updatePlotFields() {
+    const shape = document.getElementById("plotShape").value;
+    const length = document.getElementById("length");
+    const width = document.getElementById("width");
+    const extra = document.getElementById("extraMeasurements");
+
+    const sideC = document.getElementById("sideC");
+    const sideD = document.getElementById("sideD");
+    const sideE = document.getElementById("sideE");
+
+    const labelC = document.querySelector('label[for="sideC"]');
+    const labelD = document.querySelector('label[for="sideD"]');
+    const labelE = document.querySelector('label[for="sideE"]');
+
+    // Show additional measurements only when needed
+    extra.style.display =
+        (shape === "trapezoid" || shape === "irregular")
+            ? "block" : "none";
+
+    // Reset field visibility
+    sideC.style.display = "block";
+    sideD.style.display = "block";
+    sideE.style.display = "none";
+    labelC.style.display = "block";
+    labelD.style.display = "block";
+    labelE.style.display = "none";
+
+    if (shape === "rectangle") {
+        length.placeholder = "Enter length";
+        width.placeholder = "Enter width";
+    }
+    else if (shape === "triangle") {
+        length.placeholder = "Enter base";
+        width.placeholder = "Enter perpendicular height";
+    }
+    else if (shape === "trapezoid") {
+        length.placeholder = "Enter first parallel side";
+        width.placeholder = "Enter perpendicular height";
+        labelC.textContent = "Second parallel side (ft)";
+        sideC.placeholder = "Enter second parallel side";
+        labelD.style.display = "none";
+        sideD.style.display = "none";
+    }
+    else if (shape === "irregular") {
+        length.placeholder = "Enter first triangle base";
+        width.placeholder = "Enter first triangle height";
+        labelC.textContent = "Second triangle base (ft)";
+        labelD.textContent = "Second triangle height (ft)";
+        sideC.placeholder = "Enter second triangle base";
+        sideD.placeholder = "Enter second triangle height";
+    }
+
+    calculatePlotArea();
+    update2DSitePlan();
+}
+
+
+function calculatePlotArea() {
+    const shape = document.getElementById("plotShape").value;
+    const length = Number(document.getElementById("length").value);
+    const width = Number(document.getElementById("width").value);
+    const areaField = document.getElementById("area");
+
+    const extra = document.getElementById("extraMeasurements");
+    const sideC = Number(document.getElementById("sideC").value);
+    const sideD = Number(document.getElementById("sideD").value);
+    const sideE = Number(document.getElementById("sideE").value);
+
+    let area = 0;
+
+    if (shape === "rectangle") {
+        if (length > 0 && width > 0) {
+            area = length * width;
+        }
+    } 
+    else if (shape === "triangle") {
+        if (length > 0 && width > 0) {
+            area = 0.5 * length * width;
+        }
+    } 
+    else if (shape === "trapezoid") {
+        if (length > 0 && width > 0 && sideC > 0) {
+            // length and sideC are parallel sides;
+            // width is the perpendicular height.
+            area = 0.5 * (length + sideC) * width;
+        }
+    } 
+    else if (shape === "irregular") {
+        if (length > 0 && width > 0 && sideC > 0 && sideD > 0) {
+            // Approximation using two triangular sections.
+            area =
+                (0.5 * length * width) +
+                (0.5 * sideC * sideD);
+        }
+    }
+
+    areaField.value = area > 0 ? area.toFixed(2) : "";
+}
+
+
+
+function updateSitePlan() {
     const length = Number(document.getElementById("length").value);
     const width = Number(document.getElementById("width").value);
     const area = Number(document.getElementById("area").value);
+    const shape = document.getElementById("plotShape").value;
 
-    if (length <= 0 || width <= 0) {
-        alert("Please enter a valid site length and width first.");
+    if (length <= 0 || width <= 0 || area <= 0) {
+        alert("Please enter valid plot dimensions.");
         return;
     }
 
     document.getElementById("planLengthLabel").textContent =
-        "Length: " + length + " ft";
+        "Length/Base: " + length + " ft";
 
     document.getElementById("planWidthLabel").textContent =
-        "Width: " + width + " ft";
+        "Width/Height: " + width + " ft";
 
     document.getElementById("planAreaLabel").textContent =
-        "Area: " + (area > 0 ? area : length * width) + " sq ft";
+        "Area: " + area.toFixed(2) + " sq ft";
+
+    update2DSitePlan();
 }
 
 
+function update2DSitePlan() {
+    const shape = document.getElementById("plotShape").value;
+    const outline = document.getElementById("plotOutline");
+
+    if (shape === "rectangle") {
+        outline.setAttribute("x", "70");
+        outline.setAttribute("y", "45");
+        outline.setAttribute("width", "260");
+        outline.setAttribute("height", "190");
+        outline.setAttribute("rx", "0");
+        outline.setAttribute("points", "");
+    } else {
+        let points;
+
+        if (shape === "triangle") {
+            points = "200,45 330,235 70,235";
+        } else if (shape === "trapezoid") {
+            points = "120,45 280,45 330,235 70,235";
+        } else {
+            // Irregular plot
+            points = "110,55 270,40 330,120 280,230 90,215 65,120";
+        }
+
+        outline.outerHTML = `
+            <polygon id="plotOutline"
+                points="${points}"
+                fill="#e8f5e9"
+                stroke="#2563eb"
+                stroke-width="3"/>
+        `;
+    }
+
+   // Fit a rectangular building inside the selected plot
+const building = document.getElementById("buildingFootprint");
+
+if (building) {
+    const plotLeft = 70;
+    const plotRight = 330;
+    const plotTop = 45;
+    const plotBottom = 235;
+
+    let buildingWidth = 150;
+    let buildingHeight = 90;
+    let buildingX = 125;
+    let buildingY = 100;
+
+    if (shape === "triangle") {
+        // Conservative central rectangle inside the triangle
+        buildingWidth = 100;
+        buildingHeight = 60;
+        buildingX = 150;
+        buildingY = 140;
+    } 
+    else if (shape === "trapezoid") {
+        buildingWidth = 140;
+        buildingHeight = 80;
+        buildingX = 130;
+        buildingY = 110;
+    } 
+    else if (shape === "irregular") {
+        buildingWidth = 100;
+        buildingHeight = 70;
+        buildingX = 150;
+        buildingY = 105;
+    } 
+    else {
+        buildingWidth = 150;
+        buildingHeight = 90;
+        buildingX = 125;
+        buildingY = 100;
+    }
+
+    building.setAttribute("x", buildingX);
+    building.setAttribute("y", buildingY);
+    building.setAttribute("width", buildingWidth);
+    building.setAttribute("height", buildingHeight);
+}
+}
 </script>
 
 </body>
