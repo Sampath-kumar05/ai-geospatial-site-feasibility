@@ -59,6 +59,171 @@
             text-align: center;
             padding: 25px;
         }
+        
+.main-nav {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px;
+    background: #163a5c;
+}
+
+.main-nav a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.main-nav a:hover {
+    background: #2563eb;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.home-section {
+    width: 90%;
+    max-width: 1100px;
+    margin: 28px auto;
+    padding: 30px;
+    box-sizing: border-box;
+    background: linear-gradient(135deg, #eaf3ff, #f7fbff);
+    border-radius: 14px;
+    border: 1px solid #d5e4f5;
+}
+
+.home-content {
+    text-align: center;
+    max-width: 760px;
+    margin: auto;
+}
+
+.home-tag {
+    color: #2563eb;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+}
+
+.home-content h2 {
+    color: #163a5c;
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+.home-content > p:not(.home-tag) {
+    line-height: 1.7;
+    color: #475569;
+}
+
+.home-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 22px;
+}
+
+.home-button,
+.home-secondary-button {
+    display: inline-block;
+    padding: 12px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.home-button {
+    background: #1f4e79;
+    color: white;
+}
+
+.home-secondary-button {
+    background: white;
+    color: #1f4e79;
+    border: 1px solid #1f4e79;
+}
+
+.home-features {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 30px;
+}
+
+.home-feature {
+    background: white;
+    padding: 18px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
+.home-feature span {
+    font-size: 28px;
+}
+
+.home-feature h3 {
+    color: #1f4e79;
+}
+
+.home-feature p {
+    color: #475569;
+    line-height: 1.5;
+    font-size: 14px;
+}
+
+.home-disclaimer {
+    margin-top: 22px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #8a4b08;
+    text-align: center;
+}
+
+@media (max-width: 650px) {
+    .home-section {
+        width: 94%;
+        padding: 20px;
+    }
+
+    .home-content h2 {
+        font-size: 25px;
+    }
+
+    .home-features {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media print {
+    .home-section,
+    .main-nav {
+        display: none !important;
+    }
+}
+
+
+@media (max-width: 600px) {
+    .container {
+        width: 92%;
+        padding: 16px;
+        box-sizing: border-box;
+    }
+
+    .main-nav {
+        gap: 4px;
+    }
+
+    .main-nav a {
+        padding: 9px;
+        font-size: 13px;
+    }
+}
+
 
         .container {
             width: 80%;
@@ -106,6 +271,319 @@
             background: #eef5fb;
             display: none;
         }
+        
+.dashboard-section {
+    width: 90%;
+    max-width: 1100px;
+    margin: 28px auto;
+    padding: 25px;
+    box-sizing: border-box;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px #d8dee8;
+}
+
+.dashboard-section > h2 {
+    margin-top: 0;
+}
+
+.dashboard-intro {
+    color: #64748b;
+    line-height: 1.6;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 15px;
+    margin-top: 22px;
+}
+
+.dashboard-card {
+    padding: 18px;
+    border: 1px solid #dbe4ef;
+    border-radius: 10px;
+    background: #f8fbff;
+    overflow-wrap: anywhere;
+}
+
+.dashboard-icon {
+    font-size: 28px;
+}
+
+.dashboard-card h3 {
+    color: #1f4e79;
+    margin-bottom: 8px;
+}
+
+.dashboard-card p {
+    font-weight: bold;
+    color: #334155;
+}
+
+.dashboard-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 22px;
+}
+
+.dashboard-actions a {
+    display: inline-block;
+    padding: 11px 15px;
+    background: #1f4e79;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.dashboard-actions a:hover {
+    background: #163a5c;
+}
+
+@media (max-width: 800px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 500px) {
+    .dashboard-section {
+        width: 94%;
+        padding: 16px;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media print {
+    .dashboard-section {
+        display: none !important;
+    }
+}
+
+ 
+.guide-section {
+    width: 90%;
+    max-width: 1100px;
+    margin: 28px auto;
+    padding: 25px;
+    box-sizing: border-box;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px #d8dee8;
+}
+
+.guide-intro {
+    color: #475569;
+    line-height: 1.7;
+}
+
+.guide-step {
+    margin-top: 16px;
+    padding: 16px;
+    background: #f8fbff;
+    border-left: 4px solid #1f4e79;
+    border-radius: 6px;
+}
+
+.guide-step h3 {
+    color: #1f4e79;
+    margin-top: 0;
+}
+
+.guide-step p {
+    line-height: 1.7;
+    color: #334155;
+}
+
+.guide-warning {
+    margin-top: 22px;
+    padding: 16px;
+    background: #fff4df;
+    color: #704214;
+    border-radius: 8px;
+    line-height: 1.7;
+}
+
+@media (max-width: 600px) {
+    .guide-section {
+        width: 94%;
+        padding: 16px;
+    }
+}
+
+@media print {
+    .guide-section {
+        display: none !important;
+    }
+}
+   
+
+.settings-section {
+    width: 90%;
+    max-width: 1100px;
+    margin: 28px auto;
+    padding: 25px;
+    box-sizing: border-box;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px #d8dee8;
+}
+
+.settings-card {
+    margin-top: 18px;
+    padding: 18px;
+    border: 1px solid #dbe4ef;
+    border-radius: 8px;
+    background: #f8fbff;
+}
+
+.settings-card h3 {
+    color: #1f4e79;
+    margin-top: 0;
+}
+
+.settings-note {
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.5;
+}
+
+#settingsMessage {
+    font-weight: bold;
+    color: #166534;
+}
+
+body.dark-mode {
+    background: #111827;
+    color: #f3f4f6;
+}
+
+body.dark-mode .container,
+body.dark-mode .dashboard-section,
+body.dark-mode .guide-section,
+body.dark-mode .settings-section {
+    background: #1f2937;
+    color: #f3f4f6;
+}
+
+body.dark-mode .dashboard-card,
+body.dark-mode .guide-step,
+body.dark-mode .settings-card {
+    background: #374151;
+    color: #f3f4f6;
+    border-color: #4b5563;
+}
+
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode .dashboard-card h3,
+body.dark-mode .guide-step h3,
+body.dark-mode .settings-card h3 {
+    color: #93c5fd;
+}
+
+body.dark-mode p,
+body.dark-mode label {
+    color: #e5e7eb;
+}
+
+@media (max-width: 600px) {
+    .settings-section {
+        width: 94%;
+        padding: 16px;
+    }
+}
+
+@media print {
+    .settings-section {
+        display: none !important;
+    }
+}
+
+.menu-wrapper {
+    position: relative;
+    z-index: 1000;
+    padding: 10px 16px;
+    background: #163a5c;
+    text-align: left;
+}
+
+.menu-toggle {
+    background: white;
+    color: #163a5c;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+.main-nav {
+    position: absolute;
+    top: 100%;
+    left: 16px;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 190px;
+    padding: 8px;
+    background: #163a5c;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px #0003;
+    z-index: 1001;
+}
+
+#mainMenu[hidden] {
+    display: none !important;
+}
+
+#mainMenu:not([hidden]) {
+    display: flex !important;
+}
+
+
+.main-nav[hidden] {
+    display: none !important;
+}
+
+.main-nav a {
+    color: white;
+    text-decoration: none;
+    padding: 12px;
+    border-radius: 5px;
+}
+
+.main-nav a:hover {
+    background: #2563eb;
+}
+
+#mainMenu[hidden] {
+    display: none !important;
+}
+
+
+/* Hide sections until selected from the menu */
+#home,
+#dashboard,
+#userGuide,
+#settings {
+    display: none;
+}
+
+/* Show only the selected section */
+#home:target,
+#dashboard:target,
+#siteAnalysis:target,
+#userGuide:target,
+#settings:target {
+    display: block;
+}
+
     </style>
     
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -124,7 +602,349 @@
     <p>Pre-Construction Site Feasibility and Client Advisory</p>
 </header>
 
+
+
+<div class="menu-wrapper">
+    <button type="button" id="menuToggle"
+            class="menu-toggle"
+            aria-expanded="false"
+            aria-controls="mainMenu">
+        ☰ Menu
+    </button>
+
+   <nav class="main-nav" id="mainMenu" hidden style="display: none;"></nav>
+        <a href="#home">Home</a>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#siteAnalysis">Site Analysis</a>
+        <a href="#userGuide">User Guide</a>
+        <a href="#settings">Website Settings</a>
+    </nav>
+</div>
+
+
+<section id="home" class="home-section">
+    <div class="home-content">
+        <p class="home-tag">SMART CIVIL ENGINEERING PLATFORM</p>
+
+        <h2>Plan Your Site Before You Build</h2>
+
+        <p>
+            Explore preliminary site feasibility, plot measurements,
+            soil considerations, location mapping and conceptual site
+            planning in one place.
+        </p>
+
+        <div class="home-actions">
+            <a href="#siteAnalysis" class="home-button">
+                Start Site Analysis
+            </a>
+
+            <a href="#userGuide" class="home-secondary-button">
+                How to Use
+            </a>
+        </div>
+    </div>
+
+    <div class="home-features">
+        <div class="home-feature">
+            <span>📐</span>
+            <h3>Plot Measurements</h3>
+            <p>Calculate preliminary areas for supported plot shapes.</p>
+        </div>
+
+        <div class="home-feature">
+            <span>🌍</span>
+            <h3>Location Mapping</h3>
+            <p>Find and view your site on an interactive map.</p>
+        </div>
+
+        <div class="home-feature">
+            <span>🏗️</span>
+            <h3>Site Feasibility</h3>
+            <p>Review preliminary recommendations and a conceptual plan.</p>
+        </div>
+    </div>
+
+    <p class="home-disclaimer">
+        Educational planning support only. Professional site investigation
+        and engineering approval are required before construction.
+    </p>
+</section>
+
+
+<section id="dashboard" class="dashboard-section">
+    <h2>Site Analysis Dashboard</h2>
+    <p class="dashboard-intro">
+        View your current site details and quickly access the main tools.
+    </p>
+
+    <div class="dashboard-grid">
+        <div class="dashboard-card">
+            <span class="dashboard-icon">📐</span>
+            <h3>Site Area</h3>
+            <p id="dashboardArea">Not calculated yet</p>
+        </div>
+
+        <div class="dashboard-card">
+            <span class="dashboard-icon">🌱</span>
+            <h3>Soil Type</h3>
+            <p id="dashboardSoil">Not selected yet</p>
+        </div>
+
+        <div class="dashboard-card">
+            <span class="dashboard-icon">📍</span>
+            <h3>Site Location</h3>
+            <p id="dashboardLocation">Not entered yet</p>
+        </div>
+
+        <div class="dashboard-card">
+            <span class="dashboard-icon">⭐</span>
+            <h3>Feasibility Score</h3>
+            <p id="dashboardScore">Not analyzed yet</p>
+        </div>
+    </div>
+
+    <div class="dashboard-actions">
+        <a href="#siteAnalysis">Enter Site Details</a>
+        <a href="#userGuide">Read User Guide</a>
+        <a href="#settings">Open Settings</a>
+    </div>
+</section>
+
+
+<section id="userGuide" class="guide-section">
+    <h2>User Guide: How to Use This Website</h2>
+
+    <p class="guide-intro">
+        Follow these steps to perform a preliminary site feasibility
+        assessment using the AI-Powered Geospatial Web Platform.
+    </p>
+
+    <div class="guide-step">
+        <h3>Step 1: Open Site Analysis</h3>
+        <p>
+            Click Site Analysis in the navigation menu, or select
+            Start Site Analysis on the Home page.
+        </p>
+    </div>
+
+    <div class="guide-step">
+        <h3>Step 2: Select Plot Shape</h3>
+        <p>
+            Select Rectangle, Triangle, Trapezoid, or Irregular Plot
+            according to your site's approximate shape.
+        </p>
+    </div>
+
+    <div class="guide-step">
+        <h3>Step 3: Enter Plot Measurements</h3>
+        <p>
+            Enter the required length, width, height, or additional
+            measurements shown for the selected shape. All measurements
+            must be in feet. The site area is calculated automatically.
+        </p>
+        <p>
+            For irregular plots, the current calculation approximates
+            the area using two triangles. Verify the actual area using
+            a survey or appropriate measurement method.
+        </p>
+    </div>
+
+    <div class="guide-step">
+        <h3>Step 4: Enter Site Location</h3>
+        <p>
+            Enter a recognizable location, such as Hyderabad, Telangana.
+            Click Show Location on Map to locate it on the interactive map.
+            Check that the map marker indicates the intended area.
+        </p>
+    </div>
+
+    <div class="guide-step">
+        <h3>Step 5: Select Soil Type</h3>
+        <p>
+            Choose the available soil category that best matches your
+            preliminary information. Do not guess soil properties for
+            actual construction; a geotechnical investigation is required.
+        </p>
+    </div>
+
+    <div class="guide-step">
+        <h3>Step 6: Upload a Site Photograph</h3>
+        <p>
+            Select an image of your site. Use Analyze Uploaded Image
+            to view general image-classification predictions.
+            These predictions do not determine soil strength or foundation safety.
+        </p>
+    </div>
+
+    <div class="guide-step">
+        <h3>Step 7: Analyze the Site</h3>
+        <p>
+            Click Analyze Site. Review the preliminary recommendation,
+            feasibility score, soil notes, dimensions, foundation suggestions,
+            drainage considerations, and development suitability.
+        </p>
+    </div>
+
+    <div class="guide-step">
+        <h3>Step 8: Review the Dashboard</h3>
+        <p>
+            Open Dashboard to see the current site's calculated area,
+            selected soil, location, and feasibility score.
+        </p>
+    </div>
+
+    <div class="guide-step">
+        <h3>Step 9: Review the 2D Site Plan</h3>
+        <p>
+            Inspect the conceptual plot outline, proposed building footprint,
+            entrance, and open-space illustration. It is not a surveyed
+            drawing or construction-ready plan.
+        </p>
+    </div>
+
+    <div class="guide-step">
+        <h3>Step 10: Generate a Report</h3>
+        <p>
+            Click Generate / Save Report as PDF. In the print window,
+            select Save as PDF if that option is available.
+        </p>
+    </div>
+
+    <div class="guide-warning">
+        <strong>Important engineering notice</strong>
+        <p>
+            This website is an educational preliminary-planning tool.
+            Its feasibility score and suggestions are not professional
+            engineering approval. Do not select or construct a foundation
+            using these results alone. Obtain site-specific soil testing,
+            structural design, survey data, and approval from qualified
+            professionals and relevant authorities.
+        </p>
+    </div>
+</section>
+
+
+<section id="settings" class="settings-section">
+    <h2>Website Settings</h2>
+    <p>Customize your website viewing preferences.</p>
+
+    <div class="settings-card">
+        <h3>Appearance</h3>
+        <label for="themeSetting">Website Theme</label>
+        <select id="themeSetting">
+            <option value="light">Light Mode</option>
+            <option value="dark">Dark Mode</option>
+        </select>
+    </div>
+
+    <div class="settings-card">
+        <h3>Measurement Units</h3>
+        <label for="unitSetting">Plot Measurements</label>
+        <select id="unitSetting">
+            <option value="ft">Feet (ft)</option>
+        </select>
+        <p class="settings-note">
+            Changing this preference will update the measurement labels.
+            It will not convert existing entered values automatically.
+        </p>
+    </div>
+
+    <button type="button" onclick="applySettings()"> Apply Settings</button>
+
+    <p id="settingsMessage" role="status"></p>
+</section>
+
+<script>
+document.getElementById("themeSetting").addEventListener("change", function() {
+    document.body.classList.toggle("dark-mode", this.value === "dark");
+});
+
+
+
+if (menuToggle && mainMenu) {
+    mainMenu.hidden = true;
+    mainMenu.style.display = "none";
+    menuToggle.setAttribute("aria-expanded", "false");
+
+    menuToggle.addEventListener("click", function () {
+        const isOpening = mainMenu.hidden;
+
+        mainMenu.hidden = !isOpening;
+        mainMenu.style.display = isOpening ? "flex" : "none";
+
+        menuToggle.setAttribute("aria-expanded", String(isOpening));
+    });
+}
+
+
+
+const pageSections = [
+    "home",
+    "dashboard",
+    "siteAnalysis",
+    "userGuide",
+    "settings"
+];
+
+function showPage(pageId) {
+    pageSections.forEach(function (id) {
+        const section = document.getElementById(id);
+
+        if (section) {
+            section.style.display = "none";
+        }
+    });
+
+    const selectedPage = document.getElementById(pageId);
+
+    if (selectedPage) {
+        selectedPage.style.display = "block";
+    }
+
+    window.scrollTo(0, 0);
+}
+
+// Show only Home when the website opens
+showPage("home");
+
+// Handle navigation links
+document.querySelectorAll('a[href^="#"]').forEach(function (link) {
+    link.addEventListener("click", function (event) {
+        const pageId = link.getAttribute("href").substring(1);
+
+        if (pageSections.includes(pageId)) {
+            event.preventDefault();
+            showPage(pageId);
+
+            if (typeof mainMenu !== "undefined") {
+                mainMenu.hidden = true;
+                mainMenu.style.display = "none";
+                menuToggle.setAttribute("aria-expanded", "false");
+            }
+        }
+    });
+});
+
+
+
+function applySettings() {
+    const theme = document.getElementById("themeSetting").value;
+
+    document.body.classList.toggle(
+        "dark-mode",
+        theme === "dark"
+    );
+
+    document.getElementById("settingsMessage").textContent =
+        "Settings applied successfully!";
+}
+
+
+</script>
+
 <div class="container">
+id="siteAnalysis"
 
     <h2>Site Information</h2>
 
@@ -208,7 +1028,7 @@
      style="max-width:500px; display:none; margin-top:15px; border-radius:10px;"
      alt="Site Preview">
 
-    <button onclick="analyzeSite(); updateSitePlan()">Analyze Site</button>
+    <button onclick="analyzeSite(); updateSitePlan(); updateDashboard()">Analyze Site</button>
     <button onclick="analyzeUploadedImage()">
     Analyze Uploaded Image
 </button>
@@ -429,6 +1249,74 @@ document.getElementById("drainageAnalysis").innerHTML =
 document.getElementById("developmentAnalysis").innerHTML =
     "<strong>Development Suitability:</strong> Verify road access, setbacks, soil conditions, and local approvals.";
 }
+
+function updateDashboard() {
+    const area = document.getElementById("area").value;
+    const soil = document.getElementById("soil").value;
+    const location = document.getElementById("siteLocation").value.trim();
+    const score = document.getElementById("score").innerText.trim();
+
+    document.getElementById("dashboardArea").textContent =
+        area ? Number(area).toLocaleString() + " sq. ft." : "Not calculated yet";
+
+    document.getElementById("dashboardSoil").textContent =
+        soil || "Not selected yet";
+
+    document.getElementById("dashboardLocation").textContent =
+        location || "Not entered yet";
+
+    document.getElementById("dashboardScore").textContent =
+        score || "Not analyzed yet";
+}
+
+function applySettings() {
+    const theme = document.getElementById("themeSetting").value;
+    const unit = document.getElementById("unitSetting").value;
+
+    document.body.classList.toggle("dark-mode", theme === "dark");
+    alert("Apply Settings is working!");
+
+    const lengthLabel = document.querySelector('label[for="length"]');
+    const widthLabel = document.querySelector('label[for="width"]');
+    const sideCLabel = document.querySelector('label[for="sideC"]');
+    const sideDLabel = document.querySelector('label[for="sideD"]');
+    const sideELabel = document.querySelector('label[for="sideE"]');
+
+    const unitText = unit === "m" ? "m" : "ft";
+
+    if (lengthLabel) {
+        lengthLabel.textContent = "Length / Base (" + unitText + ")";
+    }
+
+    if (widthLabel) {
+        widthLabel.textContent = "Width / Height (" + unitText + ")";
+    }
+
+    if (sideCLabel) {
+        sideCLabel.textContent =
+            document.getElementById("plotShape").value === "trapezoid"
+                ? "Second parallel side (" + unitText + ")"
+                : "Second triangle base (" + unitText + ")";
+    }
+
+    if (sideDLabel) {
+        sideDLabel.textContent = "Second triangle height (" + unitText + ")";
+    }
+
+    if (sideELabel) {
+        sideELabel.textContent = "Fourth side (" + unitText + ")";
+    }
+
+    document.getElementById("settingsMessage").textContent =
+        "Settings applied. Note: changing units changes labels only; it does not convert values or recalculate area.";
+
+    if (unit === "m") {
+        document.getElementById("settingsMessage").textContent +=
+            " Entering metre values into the current calculator would produce incorrect results until unit conversion is implemented.";
+    }
+}
+
+
 document.getElementById("siteImage").addEventListener("change", function() {
     const file = this.files[0];
     const preview = document.getElementById("sitePreview");
