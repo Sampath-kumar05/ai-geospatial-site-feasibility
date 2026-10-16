@@ -584,6 +584,46 @@ body.dark-mode label {
     display: block;
 }
 
+/* Sky blue and white website theme */
+body {
+    background: linear-gradient(135deg, #eaf7ff, #ffffff, #dff2ff);
+    background-attachment: fixed;
+    color: #24415c;
+}
+
+/* White content cards */
+.container,
+.home-content,
+.dashboard-card,
+.card {
+    background-color: rgba(255, 255, 255, 0.96);
+    border: 1px solid #d8edfa;
+    border-radius: 16px;
+    box-shadow: 0 5px 18px rgba(69, 145, 190, 0.10);
+}
+
+/* Blue headings */
+h1, h2, h3 {
+    color: #1769aa;
+}
+
+/* Blue buttons */
+button {
+    background-color: #2998d8;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+}
+
+button:hover {
+    background-color: #1677b8;
+}
+
+body {
+    background: #e0f2fe !important;
+}
+
+
     </style>
     
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -612,7 +652,7 @@ body.dark-mode label {
         ☰ Menu
     </button>
 
-   <nav class="main-nav" id="mainMenu" hidden style="display: none;"></nav>
+   <nav class="main-nav" id="mainMenu" hidden>
         <a href="#home">Home</a>
         <a href="#dashboard">Dashboard</a>
         <a href="#siteAnalysis">Site Analysis</a>
@@ -997,17 +1037,19 @@ id="siteAnalysis"
 
 
 <label for="siteLocation">Site Location</label>
-<input
-    type="text"
-    id="siteLocation"
-    placeholder="Example: Hyderabad, Telangana"
+<input type="text" id="siteLocation"
+       placeholder="Enter full site address, area or landmark">
 >
 <br><br>
 
 <h3>Site Location Map</h3>
 <div id="map" style="height: 350px; width: 100%; border-radius: 10px;"></div>
+<p id="selectedSiteMessage">You can click the map to select your site location.</p>
 <br>
 <button type="button" onclick="showSiteOnMap()">Show Location on Map</button>
+
+<button type="button" onclick="useMyCurrentLocation()">Use My Current Location</button>
+
 <br><br>
 
     <label>Soil Type</label>
@@ -1330,6 +1372,80 @@ document.getElementById("siteImage").addEventListener("change", function() {
 
 let siteMap;
 let siteMarker;
+function selectSiteFromMap(e) {
+    const lat = e.latlng.lat;
+    const lon = e.latlng.lng;
+
+    if (siteMarker) {
+        siteMarker.setLatLng([lat, lon]);
+    } else {
+        siteMarker = L.marker([lat, lon]).addTo(siteMap);
+    }
+
+    siteMarker.bindPopup(
+        "Selected site<br>Latitude: " + lat.toFixed(6) +
+        "<br>Longitude: " + lon.toFixed(6)
+    ).openPopup();
+
+    const msg = document.getElementById("selectedSiteMessage");
+    if (msg) {
+        msg.textContent =
+            "Selected coordinates: " + lat.toFixed(6) + ", " + lon.toFixed(6);
+    }
+}
+
+function useMyCurrentLocation() {
+    if (!navigator.geolocation) {
+        alert("Your browser does not support location access.");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        function (position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            if (!siteMap) {
+                alert("Please click Show Location on Map first to load the map.");
+                return;
+            }
+
+            siteMap.setView([lat, lon], 18);
+
+            if (siteMarker) {
+                siteMarker.setLatLng([lat, lon]);
+            } else {
+                siteMarker = L.marker([lat, lon]).addTo(siteMap);
+            }
+
+            siteMarker.bindPopup(
+                "Your current location<br>Latitude: " +
+                lat.toFixed(6) +
+                "<br>Longitude: " +
+                lon.toFixed(6)
+            ).openPopup();
+
+            const msg = document.getElementById("selectedSiteMessage");
+            if (msg) {
+                msg.textContent =
+                    "Current coordinates: " +
+                    lat.toFixed(6) + ", " + lon.toFixed(6);
+            }
+        },
+        function (error) {
+            alert(
+                "Unable to get your location. Please allow location access " +
+                "in your browser or select your site by clicking the map."
+            );
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+    );
+}
+
 
  function showSiteOnMap() {
     const locationText = document.getElementById("siteLocation").value.trim();
@@ -1340,11 +1456,34 @@ let siteMarker;
 
     const mapElement = document.getElementById("map");
 
-    if (!siteMap) {
-        siteMap = L.map("map").setView([17.385, 78.487], 11);
-        L.tileLayer("https://tile.openstreetmap.de/{z}/{x}/{y}.png", {
+   
+if (!siteMap) {
+    siteMap = L.map("map").setView([17.385, 78.487], 11);
+    siteMap.on("click", selectSiteFromMap);
+
+    const streetLayer = L.tileLayer(
+        "https://tile.openstreetmap.de/{z}/{x}/{y}.png",
+        {
             attribution: "&copy; OpenStreetMap contributors"
-        }).addTo(siteMap);
+        }
+    );
+
+    const satelliteLayer = L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        {
+            attribution: "Tiles &copy; Esri and its imagery providers",
+            maxZoom: 19
+        }
+    );
+
+    streetLayer.addTo(siteMap);
+
+    L.control.layers({
+        "Street Map": streetLayer,
+        "Satellite View": satelliteLayer
+    }).addTo(siteMap);
+}
+
     }
 
     // Restricting search to India using countrycodes=in fixes local mapping errors
@@ -1371,8 +1510,6 @@ let siteMarker;
             }
         })
         .catch(err => console.error("Geocoding error:", err));
-}
-
 
 
 async function analyzeUploadedImage() {
