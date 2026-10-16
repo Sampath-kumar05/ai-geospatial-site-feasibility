@@ -1406,9 +1406,32 @@ function useMyCurrentLocation() {
             const lon = position.coords.longitude;
 
             if (!siteMap) {
-                alert("Please click Show Location on Map first to load the map.");
-                return;
-            }
+    siteMap = L.map("map").setView([17.385, 78.487], 11);
+
+    const streetLayer = L.tileLayer(
+        "https://tile.openstreetmap.de/{z}/{x}/{y}.png",
+        {
+            attribution: "&copy; OpenStreetMap contributors"
+        }
+    );
+
+    const satelliteLayer = L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        {
+            attribution: "Tiles &copy; Esri and its imagery providers",
+            maxZoom: 19
+        }
+    );
+
+    streetLayer.addTo(siteMap);
+
+    L.control.layers({
+        "Street Map": streetLayer,
+        "Satellite View": satelliteLayer
+    }).addTo(siteMap);
+
+    siteMap.on("click", selectSiteFromMap);
+}
 
             siteMap.setView([lat, lon], 18);
 
