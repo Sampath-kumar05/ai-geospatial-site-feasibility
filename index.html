@@ -1085,26 +1085,6 @@ id="siteAnalysis"
 
 <hr>
 
-<h3>Ground-Level Site Photo</h3>
-<p>Upload or take a photo of the actual plot to view its ground conditions.</p>
-
-<label for="groundSitePhoto">Choose Ground-Level Photo</label>
-<input
-    type="file"
-    id="groundSitePhoto"
-    accept="image/*"
-    capture="environment"
->
-
-<br><br>
-
-<img
-    id="groundSitePreview"
-    alt="Ground-Level Site Preview"
-    style="display:none; width:100%; max-width:650px; border-radius:10px; margin-top:10px;"
->
-
-
 
 <div id="sitePlanSection" style="margin: 24px 0; padding: 16px; border: 1px solid #ddd; border-radius: 10px;">
     <h2>Basic 2D Site Plan</h2>
@@ -1622,6 +1602,7 @@ note.style.borderRadius = "6px";
 result.appendChild(note);
 
         
+
 predictions.forEach(function (item) {
     const percentage = (item.probability * 100).toFixed(1);
 
@@ -1632,9 +1613,15 @@ predictions.forEach(function (item) {
     card.style.borderRadius = "8px";
 
     const label = document.createElement("p");
-    label.textContent = item.className;
     label.style.fontWeight = "bold";
     label.style.margin = "0 0 8px 0";
+
+    label.textContent = "AI detected: " + item.className;
+
+    const explanation = document.createElement("p");
+    explanation.style.margin = "0 0 8px 0";
+    explanation.textContent =
+        "This is a possible image match, not a construction-site assessment.";
 
     const track = document.createElement("div");
     track.style.backgroundColor = "#e5e7eb";
@@ -1649,15 +1636,19 @@ predictions.forEach(function (item) {
     bar.style.borderRadius = "6px";
 
     const confidence = document.createElement("p");
-    confidence.textContent = "Model confidence: " + percentage + "%";
+    confidence.textContent =
+        "AI match score: " + percentage + "%";
     confidence.style.margin = "8px 0 0 0";
 
     track.appendChild(bar);
     card.appendChild(label);
+    card.appendChild(explanation);
     card.appendChild(track);
     card.appendChild(confidence);
+
     result.appendChild(card);
 });
+
 
 
     } catch (error) {
