@@ -1050,6 +1050,12 @@ id="siteAnalysis"
 
 <button type="button" onclick="useMyCurrentLocation()">Use My Current Location</button>
 
+<br>
+<button type="button" onclick="openGroundLevelView()">
+    Ground-Level View
+</button>
+<br><br>
+
 <br><br>
 
     <label>Soil Type</label>
@@ -1076,6 +1082,28 @@ id="siteAnalysis"
 </button>
 
 <div id="imageAnalysisResult"></div>
+
+<hr>
+
+<h3>Ground-Level Site Photo</h3>
+<p>Upload or take a photo of the actual plot to view its ground conditions.</p>
+
+<label for="groundSitePhoto">Choose Ground-Level Photo</label>
+<input
+    type="file"
+    id="groundSitePhoto"
+    accept="image/*"
+    capture="environment"
+>
+
+<br><br>
+
+<img
+    id="groundSitePreview"
+    alt="Ground-Level Site Preview"
+    style="display:none; width:100%; max-width:650px; border-radius:10px; margin-top:10px;"
+>
+
 
 
 <div id="sitePlanSection" style="margin: 24px 0; padding: 16px; border: 1px solid #ddd; border-radius: 10px;">
@@ -1475,6 +1503,30 @@ function useMyCurrentLocation() {
 }
 
 
+ 
+function openGroundLevelView() {
+    let location = "";
+
+    if (siteMarker) {
+        const point = siteMarker.getLatLng();
+        location = point.lat + "," + point.lng;
+    } else {
+        location = document.getElementById("siteLocation").value.trim();
+    }
+
+    if (!location) {
+        alert("Please enter a site address or select a point on the map first.");
+        return;
+    }
+
+    const url =
+        "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=" +
+        encodeURIComponent(location);
+
+    window.open(url, "_blank");
+}
+
+
  function showSiteOnMap() {
     const locationText = document.getElementById("siteLocation").value.trim();
     if (!locationText) {
@@ -1819,6 +1871,28 @@ if (building) {
     building.setAttribute("height", buildingHeight);
 }
 }
+
+document.getElementById("groundSitePhoto").addEventListener("change", function () {
+    const file = this.files[0];
+    const preview = document.getElementById("groundSitePreview");
+
+    if (!file) {
+        preview.style.display = "none";
+        preview.removeAttribute("src");
+        return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+        alert("Please select an image file.");
+        this.value = "";
+        preview.style.display = "none";
+        return;
+    }
+
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+});
+
 </script>
 
 </body>
