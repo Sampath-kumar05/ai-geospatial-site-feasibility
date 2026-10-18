@@ -628,7 +628,7 @@ body {
     
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
@@ -1067,23 +1067,12 @@ id="siteAnalysis"
         <option>Clay Soil</option>
         <option>Gravel Soil</option>
     </select>
-
-    <label>Upload Site Image</label>
-    <input type="file" id="siteImage" accept="image/*">
-    <br><br>
-
-<img id="sitePreview"
-     style="max-width:500px; display:none; margin-top:15px; border-radius:10px;"
-     alt="Site Preview">
-
-    <button onclick="analyzeSite(); updateSitePlan(); updateDashboard()">Analyze Site</button>
-    <button onclick="analyzeUploadedImage()">
-    Analyze Uploaded Image
+    
+<br><br>
+<button type="button" onclick="analyzeSite(); update2DSitePlan(); updateDashboard();">
+    Analyze Site
 </button>
-
-<div id="imageAnalysisResult"></div>
-
-<hr>
+<br><br>
 
 
 <div id="sitePlanSection" style="margin: 24px 0; padding: 16px; border: 1px solid #ddd; border-radius: 10px;">
@@ -1543,8 +1532,8 @@ if (!siteMap) {
         "Satellite View": satelliteLayer
     }).addTo(siteMap);
 }
+siteMap.invalidateSize();
 
-    }
 
     // Restricting search to India using countrycodes=in fixes local mapping errors
     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationText)}&countrycodes=in`;
@@ -1570,94 +1559,7 @@ if (!siteMap) {
             }
         })
         .catch(err => console.error("Geocoding error:", err));
-
-
-async function analyzeUploadedImage() {
-    const image = document.getElementById("sitePreview");
-    const result = document.getElementById("imageAnalysisResult");
-
-    if (!image || !image.src ||
-        image.style.display === "none") {
-        result.innerText = "Please upload a site image first.";
-        return;
     }
-
-    result.innerText = "Loading image model. Please wait...";
-
-    try {
-        const model = await mobilenet.load();
-        const predictions = await model.classify(image);
-
-        result.innerHTML = "<h3>Image Analysis Results</h3>";
-
-        const note = document.createElement("p");
-note.textContent =
-    "Note: These are general image-classification predictions only. " +
-    "They do not measure soil strength, bearing capacity, or foundation safety.";
-note.style.color = "#8a4b08";
-note.style.backgroundColor = "#fff3cd";
-note.style.padding = "10px";
-note.style.borderRadius = "6px";
-
-result.appendChild(note);
-
-        
-
-predictions.forEach(function (item) {
-    const percentage = (item.probability * 100).toFixed(1);
-
-    const card = document.createElement("div");
-    card.style.margin = "12px 0";
-    card.style.padding = "12px";
-    card.style.border = "1px solid #ddd";
-    card.style.borderRadius = "8px";
-
-    const label = document.createElement("p");
-    label.style.fontWeight = "bold";
-    label.style.margin = "0 0 8px 0";
-
-    label.textContent = "AI detected: " + item.className;
-
-    const explanation = document.createElement("p");
-    explanation.style.margin = "0 0 8px 0";
-    explanation.textContent =
-        "This is a possible image match, not a construction-site assessment.";
-
-    const track = document.createElement("div");
-    track.style.backgroundColor = "#e5e7eb";
-    track.style.height = "12px";
-    track.style.borderRadius = "6px";
-    track.style.overflow = "hidden";
-
-    const bar = document.createElement("div");
-    bar.style.width = percentage + "%";
-    bar.style.height = "100%";
-    bar.style.backgroundColor = "#2563eb";
-    bar.style.borderRadius = "6px";
-
-    const confidence = document.createElement("p");
-    confidence.textContent =
-        "AI match score: " + percentage + "%";
-    confidence.style.margin = "8px 0 0 0";
-
-    track.appendChild(bar);
-    card.appendChild(label);
-    card.appendChild(explanation);
-    card.appendChild(track);
-    card.appendChild(confidence);
-
-    result.appendChild(card);
-});
-
-
-
-    } catch (error) {
-        console.error(error);
-        result.innerText =
-            "Image analysis failed. Check your internet connection and try again.";
-    }
-}
-
 
 function updatePlotFields() {
     const shape = document.getElementById("plotShape").value;
@@ -1810,7 +1712,7 @@ function update2DSitePlan() {
         outline.outerHTML = `
             <polygon id="plotOutline"
                 points="${points}"
-                fill="#e8f5e9"
+                fill="#86efac"
                 stroke="#2563eb"
                 stroke-width="3"/>
         `;
