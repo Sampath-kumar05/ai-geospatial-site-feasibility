@@ -567,9 +567,10 @@ body.dark-mode label {
 }
 
 
-/* Hide sections until selected from the menu */
+/* Hide all pages until selected */
 #home,
 #dashboard,
+#siteAnalysis,
 #userGuide,
 #settings {
     display: none;
@@ -899,7 +900,8 @@ body {
 document.getElementById("themeSetting").addEventListener("change", function() {
     document.body.classList.toggle("dark-mode", this.value === "dark");
 });
-
+const menuToggle = document.getElementById("menuToggle");
+const mainMenu = document.getElementById("mainMenu");
 
 
 if (menuToggle && mainMenu) {
@@ -991,7 +993,6 @@ function applySettings() {
 <label for="plotShape">Plot Shape</label>
 <select id="plotShape" onchange="updatePlotFields(); update2DSitePlan();">
     <option value="rectangle">Rectangle</option>
-    <option value="triangle">Triangle</option>
     <option value="trapezoid">Trapezoid</option>
     <option value="irregular">Irregular Plot</option>
 </select>
@@ -1038,7 +1039,7 @@ function applySettings() {
 <label for="siteLocation">Site Location</label>
 <input type="text" id="siteLocation"
        placeholder="Enter full site address, area or landmark">
->
+
 <br><br>
 
 <h3>Site Location Map</h3>
@@ -1057,6 +1058,44 @@ function applySettings() {
 
 <br><br>
 
+<h3>Setback Preferences</h3>
+
+<label for="setbackMode">Setback Option</label>
+<select id="setbackMode" onchange="update2DSitePlan()">
+    <option value="auto" selected>
+        Automatic - verify local building rules
+    </option>
+    <option value="custom">Enter my own setback distances</option>
+    <option value="hide">Hide setback markings</option>
+</select>
+
+<div id="setbackDistances">
+    <label for="frontSetback">Front Setback (ft)</label>
+    <input type="number" id="frontSetback"
+           min="0" step="0.5" value="5"
+           oninput="update2DSitePlan()">
+
+    <label for="rearSetback">Rear Setback (ft)</label>
+    <input type="number" id="rearSetback"
+           min="0" step="0.5" value="3"
+           oninput="update2DSitePlan()">
+
+    <label for="leftSetback">Left Setback (ft)</label>
+    <input type="number" id="leftSetback"
+           min="0" step="0.5" value="3"
+           oninput="update2DSitePlan()">
+
+    <label for="rightSetback">Right Setback (ft)</label>
+    <input type="number" id="rightSetback"
+           min="0" step="0.5" value="3"
+           oninput="update2DSitePlan()">
+</div>
+
+<p id="setbackMessage" style="color:#8a4b08;font-size:13px;">
+    Illustrative setback values only. Applicable local building rules
+    must be checked before using this plan for construction.
+</p>
+
     <label>Soil Type</label>
     <select id="soil">
         <option value="">Select Soil Type</option>
@@ -1068,84 +1107,98 @@ function applySettings() {
     </select>
     
 <br><br>
+
+<h3>Dynamic Floor Plan Preferences</h3>
+
+<label for="entranceFacing">Main Entrance Facing</label>
+<select id="entranceFacing" onchange="update2DSitePlan()">
+    <option value="east">East</option>
+    <option value="north">North</option>
+    <option value="south">South</option>
+    <option value="west">West</option>
+</select>
+
+<label for="bedroomCount">Number of Bedrooms</label>
+<input type="number" id="bedroomCount" min="1" max="10"
+       step="1" value="2" oninput="update2DSitePlan()">
+
+<label for="bathroomCount">Number of Bathrooms</label>
+<input type="number" id="bathroomCount" min="1" max="6"
+       step="1" value="1" oninput="update2DSitePlan()">
+
+<label for="floorCount">Number of Floors</label>
+<select id="floorCount" onchange="update2DSitePlan()">
+    <option value="1">Ground floor only</option>
+    <option value="2">Ground + 1 floor</option>
+    <option value="3" selected>Ground + 1st + 2nd floors</option>
+</select>
+
+<p style="font-size:13px;color:#8a4b08;">
+    Vastu preferences are traditional guidance. The generated plan is
+    conceptual and requires professional review before construction.
+</p>
+
 <button type="button" onclick="analyzeSite(); update2DSitePlan(); updateDashboard();">
     Analyze Site
 </button>
 <br><br>
 
 
-<div id="sitePlanSection" style="margin: 24px 0; padding: 16px; border: 1px solid #ddd; border-radius: 10px;">
-    <h2>Basic 2D Site Plan</h2>
-    <p>Illustrative rectangular plot based on the entered dimensions.</p>
+
+
+<div id="sitePlanSection"
+     style="margin:24px 0;padding:16px;border:1px solid #ddd;border-radius:10px;">
+
+    <h2>Dynamic 2D Site and Floor Plan</h2>
+    <p id="floorPlanMessage">
+        Enter plot dimensions and room preferences to update the conceptual plan.
+    </p>
 
     <svg id="sitePlanSvg"
-         viewBox="0 0 400 300"
+         viewBox="0 0 500 400"
          width="100%"
-         style="max-width: 500px; display: block; margin: auto;"
+         style="max-width:650px;display:block;margin:auto;"
          role="img"
-         aria-label="Illustrative rectangular site plan">
+         aria-label="Generated conceptual site and floor plan">
 
-       <polygon id="plotOutline"
-         points="70,45 330,45 330,235 70,235"
-         fill="#e8f5e9"
-         stroke="#2563eb"
-         stroke-width="3"/>
+        <polygon id="plotOutline"
+         points="60,60 440,60 440,340 60,340"
+         fill="none"
+         stroke="none"
+         style="display:none"/>
 
-             <rect id="buildingFootprint"
-    x="125" y="100" width="150" height="90"
-    fill="#d6dbe1"
-    stroke="#374151"
-    stroke-width="2"/>
+         <polygon id="setbackOutline"
+         points="85,85 415,85 415,315 85,315"
+         fill="none"
+         stroke="none"
+         style="display:none"/>
 
-    <!-- Conceptual building entrance -->
-<rect x="178" y="173" width="24" height="12"
-    fill="#8b5e3c"
-    stroke="#374151"
-    stroke-width="1.5"/>
-
-<text x="190" y="168"
-    text-anchor="middle"
-    font-size="10"
-    fill="#111827">Entrance</text>
-
-<!-- Building label -->
-<text x="190" y="118"
-    text-anchor="middle"
-    font-size="14"
-    fill="#111827">Proposed</text>
-
-<text x="190" y="143"
-    text-anchor="middle"
-    font-size="14"
-    fill="#111827">Building</text>
-
-<!-- Open space label -->
-<text x="190" y="215"
-    text-anchor="middle"
-    font-size="12"
-    fill="#166534">Open Space</text>
+        <g id="housePlan"></g>
 
         <text id="planLengthLabel"
-              x="200" y="30"
-              text-anchor="middle"
-              font-size="14">Length</text>
+              x="250" y="42"
+              text-anchor="middle" font-size="13">Length</text>
 
         <text id="planWidthLabel"
-              x="25" y="145"
-              text-anchor="middle"
-              font-size="14"
-              transform="rotate(-90 25 145)">width</text>
+              x="25" y="200"
+              text-anchor="middle" font-size="13"
+              transform="rotate(-90 25 200)">Width</text>
 
         <text id="planAreaLabel"
-              x="200" y="265"
-              text-anchor="middle"
-              font-size="14">Area</text>
+              x="250" y="370"
+              text-anchor="middle" font-size="13">Area</text>
+
+    
     </svg>
 
-    <p style="font-size: 13px; color: #8a4b08;">
-        Conceptual illustration only—not a surveyed drawing or construction-ready site plan.
+    <p style="font-size:13px;color:#8a4b08;">
+        Conceptual drawing only. Room sizes, setbacks, structural safety,
+        ventilation, and local building regulations must be verified
+        by a qualified professional.
     </p>
 </div>
+
+
 
 <div id="reportHeader" style="display: none;">
     <h1>AI-Powered Geospatial Web Platform</h1>
@@ -1663,6 +1716,9 @@ function calculatePlotArea() {
     }
 
     areaField.value = area > 0 ? area.toFixed(2) : "";
+    if (typeof update2DSitePlan === "function") {
+    update2DSitePlan();
+}
 }
 
 
@@ -1692,104 +1748,603 @@ function updateSitePlan() {
 
 
 function update2DSitePlan() {
-    const shape = document.getElementById("plotShape").value;
-    const outline = document.getElementById("plotOutline");
+    const get = id => document.getElementById(id);
+    const svg = get("sitePlanSvg");
+    const message = get("floorPlanMessage");
 
-    if (shape === "rectangle") {
-        outline.setAttribute("x", "70");
-        outline.setAttribute("y", "45");
-        outline.setAttribute("width", "260");
-        outline.setAttribute("height", "190");
-        outline.setAttribute("rx", "0");
-        outline.setAttribute("points", "");
-    } else {
-        let points;
+    if (!svg || !message) return;
 
-        if (shape === "triangle") {
-            points = "200,45 330,235 70,235";
-        } else if (shape === "trapezoid") {
-            points = "120,45 280,45 330,235 70,235";
-        } else {
-            // Irregular plot
-            points = "110,55 270,40 330,120 280,230 90,215 65,120";
+    const shape = (get("plotShape")?.value || "rectangle").toLowerCase();
+    const facing = (get("entranceFacing")?.value || "east").toLowerCase();
+    const bedrooms = Math.max(1, Math.min(6, Number(get("bedroomCount")?.value || 2)));
+    const bathrooms = Math.max(1, Math.min(3, Number(get("bathroomCount")?.value || 1)));
+    const floors = Math.max(1, Math.min(3, Number(get("floorCount")?.value || 3)));
+
+    const length = Number(get("length")?.value);
+    const width = Number(get("width")?.value);
+    const area = Number(get("area")?.value);
+
+    if (!(length > 0 && width > 0 && area > 0)) {
+        svg.replaceChildren();
+        message.textContent = "Enter valid plot dimensions to draw the plan.";
+        return;
+    }
+
+    const NS = "http://www.w3.org/2000/svg";
+    const panelHeight = 450;
+
+    svg.replaceChildren();
+    svg.setAttribute("viewBox", `0 0 500 ${panelHeight * floors}`);
+    svg.style.width = "100%";
+    svg.style.height = "auto";
+    svg.style.aspectRatio = `500 / ${panelHeight * floors}`;
+
+    function draw(parent, tag, attrs = {}, textContent) {
+        const el = document.createElementNS(NS, tag);
+
+        Object.entries(attrs).forEach(([key, value]) => {
+            el.setAttribute(key, value);
+        });
+
+        if (textContent !== undefined) {
+            el.textContent = textContent;
         }
 
-        outline.outerHTML = `
-            <polygon id="plotOutline"
-                points="${points}"
-                fill="#86efac"
-                stroke="#2563eb"
-                stroke-width="3"/>
-        `;
+        parent.appendChild(el);
+        return el;
     }
 
-   // Fit a rectangular building inside the selected plot
-const building = document.getElementById("buildingFootprint");
-
-if (building) {
-    const plotLeft = 70;
-    const plotRight = 330;
-    const plotTop = 45;
-    const plotBottom = 235;
-
-    let buildingWidth = 150;
-    let buildingHeight = 90;
-    let buildingX = 125;
-    let buildingY = 100;
-
-    if (shape === "triangle") {
-        // Conservative central rectangle inside the triangle
-        buildingWidth = 100;
-        buildingHeight = 60;
-        buildingX = 150;
-        buildingY = 140;
-    } 
-    else if (shape === "trapezoid") {
-        buildingWidth = 140;
-        buildingHeight = 80;
-        buildingX = 130;
-        buildingY = 110;
-    } 
-    else if (shape === "irregular") {
-        buildingWidth = 100;
-        buildingHeight = 70;
-        buildingX = 150;
-        buildingY = 105;
-    } 
-    else {
-        buildingWidth = 150;
-        buildingHeight = 90;
-        buildingX = 125;
-        buildingY = 100;
+    function label(parent, x, y, text, size = 9, weight = "600") {
+        draw(parent, "text", {
+            x,
+            y,
+            "text-anchor": "middle",
+            "dominant-baseline": "middle",
+            "font-size": size,
+            "font-family": "Arial, sans-serif",
+            "font-weight": weight,
+            fill: "#202020"
+        }, text);
     }
 
-    building.setAttribute("x", buildingX);
-    building.setAttribute("y", buildingY);
-    building.setAttribute("width", buildingWidth);
-    building.setAttribute("height", buildingHeight);
+    function wall(parent, x1, y1, x2, y2, weight = 2) {
+        draw(parent, "line", {
+            x1, y1, x2, y2,
+            stroke: "#202020",
+            "stroke-width": weight,
+            "stroke-linecap": "square"
+        });
+    }
+
+    function roomLabel(parent, x, y, w, h, lines, size = 9) {
+        const list = Array.isArray(lines) ? lines : [lines];
+        const gap = size + 3;
+        const startY = y + h / 2 - ((list.length - 1) * gap) / 2;
+
+        list.forEach((lineText, i) => {
+            label(parent, x + w / 2, startY + i * gap, lineText, size);
+        });
+    }
+
+    // Horizontal wall with a door opening and swing arc.
+    function doorH(parent, x1, x2, y, center, doorWidth = 17, swing = 1) {
+        const left = center - doorWidth / 2;
+        const right = center + doorWidth / 2;
+        const hingeX = left;
+        const endY = y + swing * doorWidth;
+
+        wall(parent, x1, y, left, y);
+        wall(parent, right, y, x2, y);
+
+        // Door leaf and swing arc.
+        wall(parent, hingeX, y, hingeX, endY, 1.3);
+
+        draw(parent, "path", {
+            d: `M ${right} ${y} A ${doorWidth} ${doorWidth} 0 0 ${swing > 0 ? 1 : 0} ${hingeX} ${endY}`,
+            fill: "none",
+            stroke: "#555555",
+            "stroke-width": 1
+        });
+    }
+
+    // Vertical wall with a door opening and swing arc.
+    function doorV(parent, x, y1, y2, center, doorWidth = 17, swing = 1) {
+        const top = center - doorWidth / 2;
+        const bottom = center + doorWidth / 2;
+        const hingeY = top;
+        const endX = x + swing * doorWidth;
+
+        wall(parent, x, y1, x, top);
+        wall(parent, x, bottom, x, y2);
+
+        wall(parent, x, hingeY, endX, hingeY, 1.3);
+
+        draw(parent, "path", {
+            d: `M ${x} ${bottom} A ${doorWidth} ${doorWidth} 0 0 ${swing > 0 ? 1 : 0} ${endX} ${hingeY}`,
+            fill: "none",
+            stroke: "#555555",
+            "stroke-width": 1
+        });
+    }
+
+    function drawCar(parent, x, y) {
+        draw(parent, "rect", {
+            x, y, width: 57, height: 91, rx: 9,
+            fill: "#f8f8f8",
+            stroke: "#333333",
+            "stroke-width": 1.6
+        });
+
+        draw(parent, "rect", {
+            x: x + 8, y: y + 15, width: 41, height: 22, rx: 4,
+            fill: "#dce8ed",
+            stroke: "#555555",
+            "stroke-width": 1
+        });
+
+        draw(parent, "rect", {
+            x: x + 8, y: y + 52, width: 41, height: 20, rx: 3,
+            fill: "#dce8ed",
+            stroke: "#555555",
+            "stroke-width": 1
+        });
+
+        wall(parent, x + 2, y + 40, x + 8, y + 40, 2);
+        wall(parent, x + 49, y + 40, x + 55, y + 40, 2);
+    }
+
+    function drawStairs(parent, x, y, w, h) {
+        // Stair treads and direction arrow.
+        const left = x + 8;
+        const right = x + w - 8;
+        const top = y + 20;
+        const bottom = y + h - 12;
+        const steps = 7;
+
+        for (let i = 0; i <= steps; i++) {
+            const yy = top + (bottom - top) * i / steps;
+            wall(parent, left, yy, right, yy, 0.9);
+        }
+
+        const midX = x + w / 2;
+        draw(parent, "line", {
+            x1: midX, y1: bottom - 3,
+            x2: midX, y2: top + 5,
+            stroke: "#333333",
+            "stroke-width": 1.5
+        });
+
+        draw(parent, "path", {
+            d: `M ${midX - 4} ${top + 11} L ${midX} ${top + 4} L ${midX + 4} ${top + 11}`,
+            fill: "none",
+            stroke: "#333333",
+            "stroke-width": 1.5
+        });
+
+        label(parent, x + w / 2, y + 10, "STAIRCASE", 7);
+    }
+
+    function drawFloor(index) {
+        const panel = draw(svg, "g", {
+            transform: `translate(0 ${index * panelHeight})`
+        });
+
+        draw(panel, "rect", {
+            x: 0, y: 0, width: 500, height: panelHeight,
+            fill: "#ffffff"
+        });
+
+        const title = [
+            "GROUND FLOOR PLAN",
+            "FIRST FLOOR PLAN",
+            "SECOND FLOOR PLAN"
+        ][index];
+
+        label(panel, 250, 23, title, 15);
+        label(panel, 250, 43, `${shape.toUpperCase()} PLOT`, 10);
+
+        // Green plot boundary and open space.
+        let plotPoints;
+
+        if (shape.includes("trapezoid")) {
+            plotPoints = "90,72 410,72 455,390 45,390";
+        } else if (shape.includes("irregular")) {
+            plotPoints = "70,78 400,68 455,190 415,390 45,365";
+        } else {
+            plotPoints = "35,72 465,72 465,390 35,390";
+        }
+
+        draw(panel, "polygon", {
+            points: plotPoints,
+            fill: "#d8edcf",
+            stroke: "#477b45",
+            "stroke-width": 2.5
+        });
+
+        // Keep a clear green margin around the building.
+        const bx = 105;
+        const by = 115;
+        const bw = 290;
+        const bh = 230;
+        const right = bx + bw;
+        const bottom = by + bh;
+
+        // White building floor with a strong outer wall.
+        draw(panel, "rect", {
+            x: bx, y: by, width: bw, height: bh,
+            fill: "#ffffff",
+            stroke: "#202020",
+            "stroke-width": 4
+        });
+
+        if (index === 0) {
+            // GROUND FLOOR: large parking + watchman room + compact stairs.
+            const splitX = 292;
+            const watchSplitY = 192;
+
+            doorV(panel, splitX, by, bottom, watchSplitY + 1, 18, -1);
+            doorH(panel, splitX, right, watchSplitY, splitX + (right - splitX) / 2, 16, 1);
+
+            roomLabel(panel, bx + 5, by + 5, splitX - bx - 10, 28,
+                ["CAR PARKING"], 10);
+
+            drawCar(panel, bx + 47, by + 73);
+            drawCar(panel, bx + 120, by + 73);
+
+            roomLabel(panel, splitX + 2, by + 2, right - splitX - 4,
+                watchSplitY - by - 4, ["WATCHMAN", "ROOM"], 8);
+
+            drawStairs(panel, splitX + 3, watchSplitY + 3,
+                right - splitX - 6, bottom - watchSplitY - 6);
+
+            // Parking entrance opening on the selected side.
+            if (facing === "north") {
+                doorH(panel, bx + 25, right - 25, by, bx + bw / 2, 28, 1);
+                label(panel, bx + bw / 2, by - 10, "ENTRY", 9);
+            } else if (facing === "south") {
+                doorH(panel, bx + 25, right - 25, bottom, bx + bw / 2, 28, -1);
+                label(panel, bx + bw / 2, bottom + 11, "ENTRY", 9);
+            } else if (facing === "west") {
+                doorV(panel, bx, by + 25, bottom - 25, by + bh / 2, 28, 1);
+                label(panel, bx - 23, by + bh / 2, "ENTRY", 8);
+            } else {
+                doorV(panel, right, by + 25, bottom - 25, by + bh / 2, 28, -1);
+                label(panel, right + 23, by + bh / 2, "ENTRY", 8);
+            }
+
+            label(panel, 250, 410, "PARKING • WATCHMAN • STAIRS", 9);
+    
+        } else {
+            // RESIDENTIAL FLOORS:
+            // Hall at the entrance side, dining and common washroom
+            // connected to the hall, bedrooms behind the hall.
+
+            // Canonical layout has the entrance at the bottom (south).
+            // Rotate the internal layout to follow the selected entrance.
+            const rotation =
+                facing === "north" ? 180 :
+                facing === "east" ? -90 :
+                facing === "west" ? 90 : 0;
+
+            const residential = draw(panel, "g", {
+                transform: `rotate(${rotation} 250 230)`
+            });
+
+            const hallTop = by + 105;
+            const kitchenRight = bx + 155;
+            const serviceLeft = bx + 155;
+            const serviceRight = right;
+
+            // BACK ZONE: bedrooms are beyond the hall.
+            const shownBedrooms = Math.min(bedrooms, 3);
+            const bedroomWidth = bw / shownBedrooms;
+
+            for (let i = 0; i < shownBedrooms; i++) {
+                const x1 = bx + i * bedroomWidth;
+                const x2 = x1 + bedroomWidth;
+
+                if (i > 0) {
+                    wall(residential, x1, by, x1, hallTop, 2);
+                }
+
+                // Bedroom entrance opens toward the hall.
+                doorH(
+                    residential,
+                    x1 + 2,
+                    x2 - 2,
+                    hallTop,
+                    x1 + bedroomWidth / 2,
+                    Math.min(16, bedroomWidth * 0.22),
+                    1
+                );
+
+                // Keep room labels clear of the ensuite.
+                roomLabel(
+                    residential,
+                    x1 + 2,
+                    by + 3,
+                    bedroomWidth - 4,
+                    hallTop - by - 6,
+                    [`BEDROOM ${i + 1}`],
+                    shownBedrooms === 3 ? 7 : 9
+                );
+            }
+
+            // Extra washroom attached to the last bedroom when
+            // two or more bathrooms are selected.
+            if (bathrooms >= 2) {
+                const lastX = bx + (shownBedrooms - 1) * bedroomWidth;
+                const ensuiteW = Math.min(39, bedroomWidth * 0.43);
+                const ensuiteH = 34;
+                const ensuiteX = lastX + bedroomWidth - ensuiteW;
+                const ensuiteY = by + 3;
+
+                draw(residential, "rect", {
+                    x: ensuiteX,
+                    y: ensuiteY,
+                    width: ensuiteW,
+                    height: ensuiteH,
+                    fill: "#ffffff",
+                    stroke: "#202020",
+                    "stroke-width": 1.5
+                });
+
+                label(
+                    residential,
+                    ensuiteX + ensuiteW / 2,
+                    ensuiteY + 10,
+                    "ENSUITE",
+                    6
+                );
+
+                label(
+                    residential,
+                    ensuiteX + ensuiteW / 2,
+                    ensuiteY + 20,
+                    "BATH",
+                    6
+                );
+
+                // Door into the attached washroom.
+                doorH(
+                    residential,
+                    ensuiteX + 2,
+                    ensuiteX + ensuiteW - 2,
+                    ensuiteY + ensuiteH,
+                    ensuiteX + ensuiteW / 2,
+                    10,
+                    -1
+                );
+            }
+
+            // ENTRANCE-SIDE ZONE: the hall is the largest space.
+            // Dining, kitchen, common washroom and stairs connect
+            // to the hall through separate door openings.
+
+            // Hall / service partition.
+            doorV(
+                residential,
+                serviceLeft,
+                hallTop,
+                bottom,
+                hallTop + (bottom - hallTop) * 0.40,
+                18,
+                1
+            );
+
+            roomLabel(
+                residential,
+                bx + 3,
+                hallTop + 3,
+                serviceLeft - bx - 6,
+                bottom - hallTop - 6,
+                ["HALL / LIVING ROOM"],
+                9
+            );
+
+            // Service area divisions.
+            const diningBottom = hallTop + 43;
+            const kitchenBottom = hallTop + 86;
+            const bathroomLeft = bx + 220;
+            const bathroomBottom = bottom - 37;
+            const stairLeft = bathroomLeft;
+
+            // Dining area at the hall side.
+            doorH(
+                residential,
+                serviceLeft,
+                serviceRight,
+                diningBottom,
+                serviceLeft + (serviceRight - serviceLeft) / 2,
+                15,
+                1
+            );
+
+            roomLabel(
+                residential,
+                serviceLeft + 2,
+                hallTop + 2,
+                serviceRight - serviceLeft - 4,
+                diningBottom - hallTop - 4,
+                ["DINING"],
+                8
+            );
+
+            // Kitchen area.
+            wall(
+                residential,
+                serviceLeft,
+                kitchenBottom,
+                bathroomLeft,
+                kitchenBottom,
+                2
+            );
+
+            doorV(
+                residential,
+                serviceLeft,
+                diningBottom,
+                bottom,
+                kitchenBottom + 3,
+                15,
+                1
+            );
+
+            roomLabel(
+                residential,
+                serviceLeft + 2,
+                diningBottom + 2,
+                bathroomLeft - serviceLeft - 4,
+                bottom - diningBottom - 4,
+                ["KITCHEN"],
+                8
+            );
+
+            // Common washroom near the hall entrance side.
+            wall(
+                residential,
+                bathroomLeft,
+                diningBottom,
+                bathroomLeft,
+                bottom,
+                2
+            );
+
+            wall(
+                residential,
+                bathroomLeft,
+                bathroomBottom,
+                serviceRight,
+                bathroomBottom,
+                2
+            );
+
+            roomLabel(
+                residential,
+                bathroomLeft + 1,
+                diningBottom + 1,
+                serviceRight - bathroomLeft - 2,
+                bathroomBottom - diningBottom - 2,
+                ["COMMON", "BATH"],
+                6
+            );
+
+            // Washroom door opens from the adjoining service area.
+            doorH(
+                residential,
+                bathroomLeft,
+                serviceRight,
+                bathroomBottom,
+                bathroomLeft + (serviceRight - bathroomLeft) / 2,
+                12,
+                -1
+            );
+
+            // Compact staircase retained on the residential floor.
+            drawStairs(
+                residential,
+                stairLeft + 2,
+                bathroomBottom + 2,
+                serviceRight - stairLeft - 4,
+                bottom - bathroomBottom - 4
+            );
+
+            // The outer entrance is still positioned by direction.
+            // The internal plan rotates so the hall faces that side.
+            if (facing === "north") {
+                doorH(panel, bx + 20, right - 20, by,
+                    bx + bw / 2, 24, 1);
+                label(panel, bx + bw / 2, by - 10, "ENTRY", 9);
+            } else if (facing === "south") {
+                doorH(panel, bx + 20, right - 20, bottom,
+                    bx + bw / 2, 24, -1);
+                label(panel, bx + bw / 2, bottom + 11, "ENTRY", 9);
+            } else if (facing === "west") {
+                doorV(panel, bx, by + 25, bottom - 25,
+                    by + bh / 2, 24, 1);
+                label(panel, bx - 23, by + bh / 2, "ENTRY", 8);
+            } else {
+                doorV(panel, right, by + 25, bottom - 25,
+                    by + bh / 2, 24, -1);
+                label(panel, right + 23, by + bh / 2, "ENTRY", 8);
+            }
+
+            if (bedrooms > 3) {
+                label(
+                    panel,
+                    250,
+                    410,
+                    `Showing 3 bedrooms; selected: ${bedrooms}`,
+                    8,
+                    "400"
+                );
+            } else {
+                label(
+                    panel,
+                    250,
+                    410,
+                    "HALL AT ENTRANCE • BEDROOMS BEHIND",
+                    8,
+                    "400"
+                );
+            }
+        }
+
+
+        // Label the green open space outside the building.
+        label(panel, 250, 375, "GREEN OPEN SPACE", 9, "500");
+        label(panel, 250, 432, "Conceptual sketch only — not for construction", 9, "400");
+    }
+
+    for (let i = 0; i < floors; i++) {
+        drawFloor(i);
+    }
+
+    // Hide older plan dimensions and outlines, if present.
+    [
+        "plotOutline",
+        "setbackOutline",
+        "planLengthLabel",
+        "planWidthLabel",
+        "planAreaLabel"
+    ].forEach(id => {
+        const el = get(id);
+        if (el) el.style.display = "none";
+    });
+
+    message.textContent =
+        "Architectural-style conceptual sketch with green open space, room partitions and door swings. " +
+        "Residential floors share the same layout. This drawing is illustrative only and is not a construction-ready plan.";
 }
+
+
+const groundSitePhoto = document.getElementById("groundSitePhoto");
+
+if (groundSitePhoto) {
+    groundSitePhoto.addEventListener("change", function () {
+        const file = this.files[0];
+        const preview = document.getElementById("groundSitePreview");
+
+        if (!preview) return;
+
+        if (!file) {
+            preview.style.display = "none";
+            preview.removeAttribute("src");
+            return;
+        }
+
+        if (!file.type.startsWith("image/")) {
+            alert("Please select an image file.");
+            this.value = "";
+            preview.style.display = "none";
+            return;
+        }
+
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+    });
 }
 
-document.getElementById("groundSitePhoto").addEventListener("change", function () {
-    const file = this.files[0];
-    const preview = document.getElementById("groundSitePreview");
-
-    if (!file) {
-        preview.style.display = "none";
-        preview.removeAttribute("src");
-        return;
-    }
-
-    if (!file.type.startsWith("image/")) {
-        alert("Please select an image file.");
-        this.value = "";
-        preview.style.display = "none";
-        return;
-    }
-
-    preview.src = URL.createObjectURL(file);
-    preview.style.display = "block";
-});
 
 </script>
 
